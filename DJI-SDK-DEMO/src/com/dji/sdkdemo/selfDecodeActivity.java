@@ -620,7 +620,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 			TimerTask controlTimerTask = new ControlTimerTask();
 			countingTask ct = new countingTask();
 	        mTimer.schedule(task, 0, 500);
-	        mTimer.schedule(controlTimerTask, 0, 60);	 //TimerTask在被schedule了之后就不能再被schedule到其他Timer了！！
+	        mTimer.schedule(controlTimerTask, 0, 30);	 //TimerTask在被schedule了之后就不能再被schedule到其他Timer了！！
 	        mTimer.schedule(ct, 0, 1000);
 	        super.onResume();
 	    }
