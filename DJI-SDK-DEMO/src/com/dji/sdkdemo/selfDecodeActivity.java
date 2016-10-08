@@ -508,7 +508,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	        textv = (TextureView)findViewById(R.id.preview_in_phone);
 	        textv.setSurfaceTextureListener(new MySurfaceTextureListener());
 	        rv = (RectView)findViewById(R.id.rect_view);
-	        rv.addOptionalRect(0, 0, 0, 0, "target", "1");
+	        rv.addOptionalRect(0.5, 0.5, 1, 1, "target", "1");
 	        rv.setOnTouchListener(new OnTouchListener(){
 	        	
 	        	int x1 = -1;
