@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:keepScreenOn="true"
+    android:background="#FFFFFF">
+	<TextureView
+        android:id="@+id/preview_in_phone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center" />
+	<com.garrett.ui.RectView
+	    android:id="@+id/rect_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center" />
+
+       <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="执行" />
+
+       <EditText
+           android:id="@+id/editIp"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentBottom="true"
+           android:layout_alignParentRight="true"
+           android:ems="10"
+           android:inputType="textUri" >
+
+           <requestFocus />
+       </EditText>
+
+       <ImageView
+           android:id="@+id/imageViewControlConnect"
+           android:layout_width="50dip"
+           android:layout_height="50dip"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentTop="true"
+           android:src="@drawable/pc_unconnected" />
+
+       <ImageView
+           android:id="@+id/imageViewAircraft"
+           android:layout_width="50dip"
+           android:layout_height="50dip"
+           android:layout_alignParentTop="true"
+           android:layout_marginLeft="19dp"
+           android:layout_toRightOf="@+id/imageViewControlConnect"
+           android:src="@drawable/aircraft_unconnected" />
+
+       <ImageView
+           android:id="@+id/imageViewPC"
+           android:layout_width="50dip"
+           android:layout_height="50dip"
+           android:layout_alignParentTop="true"
+           android:layout_marginLeft="14dp"
+           android:layout_toRightOf="@+id/imageViewAircraft"
+           android:src="@drawable/pc_unconnected" />
+
+       <Button
+           android:id="@+id/button1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_above="@+id/buttonIpSet"
+           android:layout_alignParentRight="true"
+           android:onClick="beginImageTransmite"
+           android:text="开始图传"
+           android:textColor="@color/gray" />
+
+       <Button
+           android:id="@+id/button2"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_above="@+id/button1"
+           android:layout_alignParentRight="true"
+           android:onClick="oneKeyFly"
+           android:text="一键飞行" />
+
+       <Button
+           android:id="@+id/buttonIpSet"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentBottom="true"
+           android:layout_toLeftOf="@+id/editIp"
+           android:onClick="setIp"
+           android:text="设定ip" />
+
+       <Button
+           android:id="@+id/button3"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_above="@+id/button2"
+           android:layout_alignParentRight="true"
+           android:onClick="spin2Right"
+           android:text="右旋转" />
+
+</RelativeLayout>
