@@ -123,99 +123,102 @@ public class selfDecodeActivity extends DemoBaseActivity{
 								byte[]  data = null;
 								if (rtControl.isLongConnection() == true){
 									//setResultToToast("checkpoint 2");
-
-									try {
-										data = SocketUtil.readByteFromStream(rtControl.heartBreakerRequest.getInputStream());
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-									
-									
-									
-									if(data != null){
-
-										if((data[0] == 0) && (data[1] == 1) && (data[2] == 3)){
-											switch (data[3]){
-											case 1:
-						                        DJIDrone.getDjiGroundStation().setAircraftThrottle(data[7], new DJIGroundStationExecuteCallBack(){
-				
-													@Override
-													public void onResult(GroundStationResult arg0) {
-														// TODO Auto-generated method stub
-//														setResultToToast("垂直移动");
-														
-													}
-						                        	
-						                        });
-												
-												break;
-											case 2:
-												
-						                        DJIDrone.getDjiGroundStation().setAircraftPitchSpeed(data[4]*((data[5] & (int)0xff) + ((data[6] << 8)&(int)0xffff)), new DJIGroundStationExecuteCallBack(){
-				
-													@Override
-													public void onResult(GroundStationResult arg0) {
-														// TODO Auto-generated method stub
-//														setResultToToast("前后移动");
-
-													}
-						                        	
-						                        });
-												
-												break;
-											case 3:
-						                        DJIDrone.getDjiGroundStation().setAircraftRollSpeed(data[4]*((data[5] & (int)0xff) + ((data[6] << 8)&(int)0xffff)), new DJIGroundStationExecuteCallBack(){
-				
-													@Override
-													public void onResult(GroundStationResult arg0) {
-														// TODO Auto-generated method stub
-//														setResultToToast("左右移动");        
-													}
-						                        	
-						                        });
-												
-												break;
-											case 4:
-						                        DJIDrone.getDjiGroundStation().setAircraftYawSpeed(data[4]*((data[5] & (int)0xff) + ((data[6] << 8)&(int)0xffff)), new DJIGroundStationExecuteCallBack(){
-				
-													@Override
-													public void onResult(GroundStationResult arg0) {
-//														setResultToToast("水平旋转");
-													}
-						                        	
-						                        });
-												
-												break;
-											case 5:
-												
-						                    	DJIGimbalRotation mPitch = null;
-					                        	mPitch = new DJIGimbalRotation(true, false,false, data[4]*((data[8] & (int)0xff) + ((data[9] << 8)&(int)0xffff))); 
-					                            DJIDrone.getDjiGimbal().updateGimbalAttitude(mPitch,null,null);
-						                      
-//									            setResultToTv("执行云台指令，速度为："+data[4]*((data[8] & (int)0xff) + ((data[9] << 8)&(int)0xffff)));
-									            break;       
-											default:
-												break;
-											}
-											byte[] comfirm = new byte[10];
-											comfirm[0] = 0;
-											comfirm[1] = 1;
-											comfirm[2] = 4;
-											for (int i = 3; i <= 9; i++){
-												comfirm[i] = data[i];
-											}
-//											try {
-//												SocketUtil.wrightBytes2Stream(data, rtControl.heartBreakerRequest.getOutputStream());
-//											} catch (IOException e) {
-//												// TODO Auto-generated catch block
-//												e.printStackTrace();
-//											}
-											return;
+									do{
+										data = null;
+										try {
+											data = SocketUtil.readByteFromStream(rtControl.heartBreakerRequest.getInputStream());
+										} catch (Exception e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
 										}
-									}
+										
+										
+										
+										if(data != null){
+	
+											if((data[0] == 0) && (data[1] == 1) && (data[2] == 3)){
+												switch (data[3]){
+												case 1:
+							                        DJIDrone.getDjiGroundStation().setAircraftThrottle(data[7], new DJIGroundStationExecuteCallBack(){
+					
+														@Override
+														public void onResult(GroundStationResult arg0) {
+															// TODO Auto-generated method stub
+	//														setResultToToast("垂直移动");
+															
+														}
+							                        	
+							                        });
+													
+													break;
+												case 2:
+													
+							                        DJIDrone.getDjiGroundStation().setAircraftPitchSpeed(data[4]*((data[5] & (int)0xff) + ((data[6] << 8)&(int)0xffff)), new DJIGroundStationExecuteCallBack(){
+					
+														@Override
+														public void onResult(GroundStationResult arg0) {
+															// TODO Auto-generated method stub
+	//														setResultToToast("前后移动");
+	
+														}
+							                        	
+							                        });
+													
+													break;
+												case 3:
+							                        DJIDrone.getDjiGroundStation().setAircraftRollSpeed(data[4]*((data[5] & (int)0xff) + ((data[6] << 8)&(int)0xffff)), new DJIGroundStationExecuteCallBack(){
+					
+														@Override
+														public void onResult(GroundStationResult arg0) {
+															// TODO Auto-generated method stub
+	//														setResultToToast("左右移动");        
+														}
+							                        	
+							                        });
+													
+													break;
+												case 4:
+							                        DJIDrone.getDjiGroundStation().setAircraftYawSpeed(data[4]*((data[5] & (int)0xff) + ((data[6] << 8)&(int)0xffff)), new DJIGroundStationExecuteCallBack(){
+					
+														@Override
+														public void onResult(GroundStationResult arg0) {
+	//														setResultToToast("水平旋转");
+														}
+							                        	
+							                        });
+													
+													break;
+												case 5:
+													
+							                    	DJIGimbalRotation mPitch = null;
+						                        	mPitch = new DJIGimbalRotation(true, false,false, data[4]*((data[8] & (int)0xff) + ((data[9] << 8)&(int)0xffff))); 
+						                            DJIDrone.getDjiGimbal().updateGimbalAttitude(mPitch,null,null);
+							                      
+	//									            setResultToTv("执行云台指令，速度为："+data[4]*((data[8] & (int)0xff) + ((data[9] << 8)&(int)0xffff)));
+										            break;       
+												default:
+													break;
+												}
+												byte[] comfirm = new byte[10];
+												comfirm[0] = 0;
+												comfirm[1] = 1;
+												comfirm[2] = 4;
+												for (int i = 3; i <= 9; i++){
+													comfirm[i] = data[i];
+												}
+	//											try {
+	//												SocketUtil.wrightBytes2Stream(data, rtControl.heartBreakerRequest.getOutputStream());
+	//											} catch (IOException e) {
+	//												// TODO Auto-generated catch block
+	//												e.printStackTrace();
+	//											}
+												return;
+											}
+										}
+									}while(data != null);
 								}
 								
+
 								
 							}
 						}
@@ -581,7 +584,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	        rt.activity = this;
 	       // rt.heartThreadPriory = Thread.MAX_PRIORITY - 1;
 		    rt.heartThreadPriory = 2;
-	        this.rtControl = new RequestThread(ip, 2000, 30002, 30003) ;
+	        this.rtControl = new RequestThread(ip, 10, 30002, 30003) ;
 	        rtControl.activity = this;
 	        rtControl.heartThreadPriory = Thread.MIN_PRIORITY;
 	        rtControl.sleepTime = 1000;
@@ -620,7 +623,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 			TimerTask controlTimerTask = new ControlTimerTask();
 			countingTask ct = new countingTask();
 	        mTimer.schedule(task, 0, 500);
-	        mTimer.schedule(controlTimerTask, 0, 30);	 //TimerTask在被schedule了之后就不能再被schedule到其他Timer了！！
+	        mTimer.schedule(controlTimerTask, 0, 200);	 //TimerTask在被schedule了之后就不能再被schedule到其他Timer了！！
 	        mTimer.schedule(ct, 0, 1000);
 	        super.onResume();
 	    }
