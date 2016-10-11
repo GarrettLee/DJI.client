@@ -18,6 +18,7 @@ import com.garrett.tcpip.RequestThread;
 import com.garrett.tcpip.SocketUtil;
 import com.garrett.ui.HKDialogLoading;
 import com.garrett.ui.RectView;
+import com.garrett.util.timer.MyClock;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -117,6 +118,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
+							
 							isFlying = true;
 							if(isFlying){
 								//setResultToToast("checkpoint 1");
@@ -125,11 +127,15 @@ public class selfDecodeActivity extends DemoBaseActivity{
 									//setResultToToast("checkpoint 2");
 									do{
 										data = null;
+										setResultToTv("开始定时器@"+MyClock.getClock());
 										try {
+//											rtControl.heartBreakerRequest.getInputStream().read(data, 0, 3);
 											data = SocketUtil.readByteFromStream(rtControl.heartBreakerRequest.getInputStream());
 										} catch (Exception e) {
 											// TODO Auto-generated catch block
-											e.printStackTrace();
+											setResultToTv("	结束定时器@"+MyClock.getClock());
+											//e.printStackTrace();
+
 										}
 										
 										
@@ -217,10 +223,8 @@ public class selfDecodeActivity extends DemoBaseActivity{
 										}
 									}while(data != null);
 								}
-								
-
-								
 							}
+							
 						}
 			        };
 		
@@ -584,7 +588,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	        rt.activity = this;
 	       // rt.heartThreadPriory = Thread.MAX_PRIORITY - 1;
 		    rt.heartThreadPriory = 2;
-	        this.rtControl = new RequestThread(ip, 10, 30002, 30003) ;
+	        this.rtControl = new RequestThread(ip, 30, 30002, 30003) ;
 	        rtControl.activity = this;
 	        rtControl.heartThreadPriory = Thread.MIN_PRIORITY;
 	        rtControl.sleepTime = 1000;
