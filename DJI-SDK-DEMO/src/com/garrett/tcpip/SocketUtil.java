@@ -36,7 +36,7 @@ public class SocketUtil {
 	 */
 	public static void writeStr2Stream(String str, OutputStream out) throws IOException {
 		try {
-			System.out.println(SocketUtil.getNowTime() + ": prepared to write [" + str + "].");
+			//System.out.println(SocketUtil.getNowTime() + ": prepared to write [" + str + "].");
 			// add buffered writer
 			BufferedOutputStream writer = new BufferedOutputStream(out);
 			writer.write(START_FLAG);
@@ -74,13 +74,13 @@ public class SocketUtil {
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();  
 		byte[] data = new byte[2048];  
 		int len = 0;
-		System.out.println("开始取数据");
+		//System.out.println("开始取数据");
 		int dataLength = x;
 		try {
 			int dataLeft = dataLength;
 			Date start = new Date();
 			for(; (outStream.size() < dataLength); ){
-				System.out.println(outStream.size() + "/"+dataLength);
+				//System.out.println(outStream.size() + "/"+dataLength);
 				while ((len = in.read(data, 0, dataLeft > 2048?2048:dataLeft)) != -1) {
 					dataLeft -= len;
 					// if the length of array is 1M
@@ -106,16 +106,16 @@ public class SocketUtil {
 				//Thread.sleep(100);
 			}
 			if (dataLeft == 0){
-				System.out.println("读取成功");
+				//System.out.println("读取成功");
 			}
 			else{
-				System.out.println("读取失败");
+				//System.out.println("读取失败");
 				return null;
 
 			}
 
 		} catch (IOException e) {
-			System.out.println(e);
+			//System.out.println(e);
 			throw e;
 		}
 		data = null;
@@ -148,7 +148,7 @@ public class SocketUtil {
 	
 	public static byte[] readByteFromStream(InputStream in) throws InterruptedException, IOException  {
 		byte[] data = null;
-		System.out.println("开始取数据");
+		//System.out.println("开始取数据");
 		int dataLength= 0;
 		try {
 			byte[] head = null;
@@ -158,22 +158,22 @@ public class SocketUtil {
 				dataLength = (head[1]&(int)0xff) + ((head[2]<<8)&(int)0xffff);
 			}
 			else{
-				System.out.println("文件头出错: "+ head[0] + ", " + head[1] + ", " + head[2]);
+				//System.out.println("文件头出错: "+ head[0] + ", " + head[1] + ", " + head[2]);
 			}
 			
 			data = readXBytes2ByteArray(in, dataLength);
 
 		} catch (IOException e) {
-			System.out.println(e);
+			//System.out.println(e);
 			throw e;
 		}
 		if (dataLength < 20){
 			ByteArrayOutputStream allOut = null;
-			System.out.println(new String(data));
+			//System.out.println(new String(data));
 			if ((new String(data)).contains("big data")){
-				System.out.println("数据量大于0xffff");
+				//System.out.println("数据量大于0xffff");
 				int[] packageNum = readIntFromStream(in);
-				System.out.println("数据包个数为：" + packageNum[0]);
+				//System.out.println("数据包个数为：" + packageNum[0]);
 				
 				allOut = new ByteArrayOutputStream();
 				for (int i = 0; i < packageNum[0]; i++){

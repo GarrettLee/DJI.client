@@ -95,7 +95,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 		protected static final int SHOWTOAST = 3;
 		private RectView rv = null;
 		private TextureView textv = null;
-		class ControlTimerTask extends TimerTask{
+		class ControlTimerTask implements Runnable{
 			//==============================================================================
 			//指令格式	{0, 1, 3, 1/2/3/4, 0/1, -10,00~10,00, 0/1/2, -2400~2400}
 //			        	 │	│  │    │       │        │        │        └─只有在控制云台时有用，范围为-2400到2400，占据两个字节。
@@ -118,30 +118,34 @@ public class selfDecodeActivity extends DemoBaseActivity{
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
-							
+							//setResultToTv("开始定时器@"+MyClock.getClock());
 							isFlying = true;
+							while(isFlying){
+							
 							if(isFlying){
 								//setResultToToast("checkpoint 1");
 								byte[]  data = null;
 								if (rtControl.isLongConnection() == true){
 									//setResultToToast("checkpoint 2");
-									do{
+									
 										data = null;
-										setResultToTv("开始定时器@"+MyClock.getClock());
+										
 										try {
 //											rtControl.heartBreakerRequest.getInputStream().read(data, 0, 3);
 											data = SocketUtil.readByteFromStream(rtControl.heartBreakerRequest.getInputStream());
 										} catch (Exception e) {
 											// TODO Auto-generated catch block
-											setResultToTv("	结束定时器@"+MyClock.getClock());
+											
 											//e.printStackTrace();
-
+											
 										}
 										
 										
 										
 										if(data != null){
-	
+											if(data.length < 3){
+												continue;
+											}
 											if((data[0] == 0) && (data[1] == 1) && (data[2] == 3)){
 												switch (data[3]){
 												case 1:
@@ -205,26 +209,46 @@ public class selfDecodeActivity extends DemoBaseActivity{
 												default:
 													break;
 												}
-												byte[] comfirm = new byte[10];
-												comfirm[0] = 0;
-												comfirm[1] = 1;
-												comfirm[2] = 4;
-												for (int i = 3; i <= 9; i++){
-													comfirm[i] = data[i];
-												}
+//												byte[] comfirm = new byte[10];
+//												comfirm[0] = 0;
+//												comfirm[1] = 1;
+//												comfirm[2] = 4;
+//												for (int i = 3; i <= 9; i++){
+//													comfirm[i] = data[i];
+//												}
 	//											try {
 	//												SocketUtil.wrightBytes2Stream(data, rtControl.heartBreakerRequest.getOutputStream());
 	//											} catch (IOException e) {
 	//												// TODO Auto-generated catch block
 	//												e.printStackTrace();
 	//											}
-												return;
+											}
+											
+										}else{
+											try {
+												Thread.sleep(40);
+											} catch (InterruptedException e) {
+												// TODO Auto-generated catch block
+												//e.printStackTrace();
 											}
 										}
-									}while(data != null);
+																			
+								}else{
+									try {
+										Thread.sleep(40);
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										//e.printStackTrace();
+									}
+									continue;
 								}
+									
+							}else{
+								return;
 							}
-							
+							}
+							//setResultToTv("	结束定时器@"+MyClock.getClock());
+							return;
 						}
 			        };
 		
@@ -319,6 +343,8 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	        @Override
 	        public void run() 
 	        {
+//				setResultToTv("开始定时器@"+MyClock.getClock());
+
 	            //Log.d(TAG ,"==========>Task Run In!");
 	            checkConnectState(); 
 	            if(rt != null){
@@ -361,6 +387,8 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	                	}
 	                }
                 }
+//				setResultToTv("	结束定时器@"+MyClock.getClock());
+
 	        }
 
 	    };
@@ -588,7 +616,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	        rt.activity = this;
 	       // rt.heartThreadPriory = Thread.MAX_PRIORITY - 1;
 		    rt.heartThreadPriory = 2;
-	        this.rtControl = new RequestThread(ip, 30, 30002, 30003) ;
+	        this.rtControl = new RequestThread(ip, 20, 30002, 30003) ;
 	        rtControl.activity = this;
 	        rtControl.heartThreadPriory = Thread.MIN_PRIORITY;
 	        rtControl.sleepTime = 1000;
@@ -624,11 +652,15 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	        // TODO Auto-generated method stub
 	        mTimer = new Timer();
 	        Task task = new Task();
-			TimerTask controlTimerTask = new ControlTimerTask();
+			//TimerTask controlTimerTask = new ControlTimerTask();
 			countingTask ct = new countingTask();
 	        mTimer.schedule(task, 0, 500);
-	        mTimer.schedule(controlTimerTask, 0, 60);	 //TimerTask在被schedule了之后就不能再被schedule到其他Timer了！！
+	        //mTimer.schedule(controlTimerTask, 0, 200);	 //TimerTask在被schedule了之后就不能再被schedule到其他Timer了！！
 	        mTimer.schedule(ct, 0, 1000);
+	        ControlTimerTask ctt = new ControlTimerTask();
+	        Thread t = new Thread(ctt);
+	        t.setPriority(3);
+	        t.start();
 	        super.onResume();
 	    }
 	    
