@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.dji.sdkdemo.selfDecodeActivity;
 
@@ -36,7 +37,8 @@ public class HeartBreakThread implements Runnable {
 	int dataInBuffer = 0;
 	
 	private BlockingQueue<byte[]> queue;	//数据队列
-	
+	public BlockingQueue<Integer> bytenum;//资源的队列，用作要传输的字节流的缓冲区
+
 	
 	//????????????java中的赋值是怎样传送数据的？是赋予指针还是直接复制一个新的？为什么这里的queue在赋值后，右端表达式改变后左端表达式亦随之改变？
 	//答案：java中对象的赋值，如A=B,实际上就是把B对象的对象引用赋给A，而不是把B所引用的整个对象复制给A，
@@ -62,20 +64,21 @@ public class HeartBreakThread implements Runnable {
 							Thread.sleep(sleepTime);		//为低优先级的线程腾出时间
 							continue;
 						}
-						if(data.length<4000){		//如果数据太少，就等到存到1000再发送
+						//if(data.length<4000){		//如果数据太少，就等到存到1000再发送
 							ByteArrayOutputStream data2Send = new ByteArrayOutputStream();
-							data2Send.write(data);
+							data2Send.write(data, 0, bytenum.poll());
+//							data2Send.write(data);
 							while(data2Send.size()<4000){
 								byte[] temp = queue.poll();
 								if(temp!= null) {
-									data2Send.write(temp);
+									data2Send.write(temp, 0, bytenum.poll());
 								}
 								else{
 									Thread.sleep(sleepTime);		
 								}
 							}
 							data = data2Send.toByteArray();
-						}
+						//}
 						if (queue.size() > 1000){
 							this.activity.setResultToTv("队列中剩下的数组数："+queue.size());
 						}

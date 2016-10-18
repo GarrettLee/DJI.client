@@ -35,6 +35,8 @@ public class RequestThread implements Runnable {
 	private Handler h;					//备用，当数据传输的过程需要在activity中体现时可以使用它来传输message
 	public Socket heartBreakerRequest;	//提供给长连接用的socket
 	public BlockingQueue<byte[]> queue = new  LinkedBlockingQueue<byte[]>(70000);//资源的队列，用作要传输的字节流的缓冲区
+	public BlockingQueue<Integer> bytenum = new  LinkedBlockingQueue<Integer>(10000);//资源的队列，用作要传输的字节流的缓冲区
+
 	/**
 	 * keep connection online or not. default value : false.
 	 */
@@ -100,6 +102,7 @@ public class RequestThread implements Runnable {
 				
 				//建立长连接
 				heartBreakThread = new HeartBreakThread(this.heartBreakerRequest, queue);
+				heartBreakThread.bytenum = bytenum;
 				heartBreakThread.sleepTime = this.sleepTime ;
 				Thread t = new Thread(heartBreakThread );
 				t.setPriority(this.heartThreadPriory);
@@ -167,36 +170,37 @@ public class RequestThread implements Runnable {
 	}
 	
 	public boolean send2Master(byte[] data, int len){
-		byte[] dataSend = null;
-		try{
-			dataSend = new byte[len];		//这里产生的数组在socket发送的过程中如果没有被接收，就会一直存在与内存之中，造成内存溢出，所以要检测exception
-		}
-		catch (OutOfMemoryError e){
-			this.activity.setResultToTv(e.getMessage());
-			this.activity.setResultToTv(e.toString());
-			this.heartBreakThread.setKeepAlive(false);
-			while(!this.heartBreakThread.state);
-			return false;
-		}
-    	System.arraycopy(data, 0, dataSend, 0, len);
+//		byte[] dataSend = null;
+//		try{
+//			dataSend = new byte[len];		//这里产生的数组在socket发送的过程中如果没有被接收，就会一直存在与内存之中，造成内存溢出，所以要检测exception
+//		}
+//		catch (OutOfMemoryError e){
+//			this.activity.setResultToTv(e.getMessage());
+//			this.activity.setResultToTv(e.toString());
+//			this.heartBreakThread.setKeepAlive(false);
+//			while(!this.heartBreakThread.state);
+//			return false;
+//		}
+//    	System.arraycopy(data, 0, dataSend, 0, len);
 		if (isLongConnection == true){
-			if (queue.remainingCapacity() < 5000){
-				this.activity.setResultToTv("队列将要满，清空队列");
-				queue.clear();
-			}
+//			if (queue.remainingCapacity() < 5000){
+//				this.activity.setResultToTv("队列将要满，清空队列");
+//				queue.clear();
+//			}
 			//当长连接仍在维持时，把需要送过去的数据放到队列里，等待长连接发送。否则为了防止队列内存溢出，清除队列。
-			if((!this.heartBreakerRequest.isClosed()) ){
+//			if((!this.heartBreakerRequest.isClosed()) ){
 				try {
-					queue.put(dataSend);		//如果队列已满就等待
+					bytenum.put(len);
+					queue.put(data);		//如果队列已满就等待
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
-			else{
-				this.activity.setResultToTv("heart连接关闭，清空队列");
-				queue.clear();
-			}
+//			}
+//			else{
+//				this.activity.setResultToTv("heart连接关闭，清空队列");
+//				queue.clear();
+//			}
 
 			return true;
 		}

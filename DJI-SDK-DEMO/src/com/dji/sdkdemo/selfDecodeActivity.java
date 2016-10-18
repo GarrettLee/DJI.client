@@ -62,6 +62,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	
     int bytenum = 0;
     int receiveTime = 0;
+    InputStream fis = null;
     
 		private String  ip = "172.20.10.9";
 	    private static final String TAG = "selfDecodeActivity";
@@ -343,7 +344,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	        @Override
 	        public void run() 
 	        {
-//				setResultToTv("开始定时器@"+MyClock.getClock());
+				//setResultToTv("开始定时器@"+MyClock.getClock());
 
 	            //Log.d(TAG ,"==========>Task Run In!");
 	            checkConnectState(); 
@@ -387,7 +388,7 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	                	}
 	                }
                 }
-//				setResultToTv("	结束定时器@"+MyClock.getClock());
+				//setResultToTv("	结束定时器@"+MyClock.getClock());
 
 	        }
 
@@ -530,13 +531,19 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	    @Override
 	    protected void onCreate(Bundle savedInstanceState)
 	    {
+//	    	try {
+//				fops = new FileOutputStream(file);
+//			} catch (FileNotFoundException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
 	    	try {
-				fops = new FileOutputStream(file);
+				fis = new FileInputStream(file);
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-	       
+	    	
 	        super.onCreate(savedInstanceState);
 	        setContentView(R.layout.image_transmite_layout);
 	        tv = (TextView)findViewById(R.id.textView1);
@@ -801,12 +808,12 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	    protected void onDestroy()
 	    {
 	        // TODO Auto-generated method stub
- 	        try {
-				fops.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+// 	        try {
+////				fops.close();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 
 	        
 	        if (mVideoDecoder != null) {
@@ -891,19 +898,36 @@ public class selfDecodeActivity extends DemoBaseActivity{
 	            @Override
 	            public void onResult(byte[] videoBuffer, int size)
 	            {
+//	            	setResultToTv("开始定时器@"+MyClock.getClock());
 	            	final int finalSize = size;
+	            	
+//	            	try {
+//	    					byte[] buffer = new byte[1000];
+//	    					fis.read(buffer, 0, 1000);
+//	    					DJIDrone.getDjiCamera().sendDataToDecoder(buffer,1000);
+//	    			} catch (FileNotFoundException e) {
+//	    				// TODO Auto-generated catch block
+//	    				e.printStackTrace();
+//	    			} catch (IOException e) {
+//	    				// TODO Auto-generated catch block
+//	    				e.printStackTrace();
+//	    			}
+	            	
 	            	//这个函数不能被阻塞，否则图像会花掉
 	            	if (isTransmitting) {
+//	            		sendThread s = new sendThread(videoBuffer,size);
+//	            		Thread t = new Thread(s);
+//	            		t.start();
 	            		rt.send2Master(videoBuffer, size);
 	            	}
 	            	else{
 	            		DJIDrone.getDjiCamera().sendDataToDecoder(videoBuffer,size);
 	            	}
 							// TODO Auto-generated method stub
-	            	synchronized(selfDecodeActivity.this){
-	            		bytenum += finalSize;
-	            		receiveTime += 1;
-	            	}
+//	            	synchronized(selfDecodeActivity.this){
+//	            		bytenum += finalSize;
+//	            		receiveTime += 1;
+//	            	}
 //	            	try {
 //						Thread.sleep(5);
 //					} catch (InterruptedException e) {
@@ -918,27 +942,39 @@ public class selfDecodeActivity extends DemoBaseActivity{
 //						// TODO Auto-generated catch block
 //						e1.printStackTrace();
 //					}
-//                	if (toDisk.size() >= 600000){
-//                		String uri = "/sdcard/fortest" + ".h264";
-//                		writeImageToDisk(toDisk.toByteArray(), uri);
-//                		selfDecodeActivity.this.setResultToTv("进行一次写文件操作");
-//                		try {
-//                			toDisk.flush();
-//						} catch (IOException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//                	}
-//                	else{
-//                    	toDisk.write(videoBuffer, 0, size);
-//                	}
-	            }
+//	            	setResultToTv("结束定时器@"+MyClock.getClock());
+                		            }
 	        };
 	        
 	        DJIDrone.getDjiCamera().setReceivedVideoDataCallBack(mReceivedVideoDataCallBack);
 	        
-	        
+//	        byte[] buffer = new byte[1000];
+//			try {
+//				fis.read(buffer, 0, 1000);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 	    }
-	   
+	
+	    
+	    class sendThread implements Runnable{
+	    	byte[] videoBuffer;
+	    	int size;
+	    	
+	    	sendThread(byte[] videoBuffer,int size){
+	    		this.videoBuffer = videoBuffer;
+	    		this.size = size;
+	    	}
+	    	
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+        		rt.send2Master(videoBuffer, size);
+			}
+	    	
+	    }
+	    
 }
+
 
